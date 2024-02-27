@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>star-bright</title>
+    <script type="text/javascript">
+        let socket
+        // 如果当前环境支持websocket
+        if (window.WebSocket) {
+            // 请求路径
+            socket = new WebSocket("ws://localhost:8000/hello");
+            console.log("create websocket", socket)
+
+            socket.onmessage = function (result) {
+                let receiveMessage = document.getElementById("receiveMessage")
+                receiveMessage.value = receiveMessage.value + "\n" + result.data
+            }
+
+            // 此处当服务端关闭，就能接收到服务端到推送
+            socket.onclose = function (result) {
+                let receiveMessage = document.getElementById("receiveMessage")
+                receiveMessage.value = receiveMessage.value + "\n" + "连接关闭"
+            }
+
+            // 发送websocket请求
+            function send() {
+                let message = document.getElementById("message")
+                if (socket.readyState === WebSocket.OPEN) {
+                    console.log("send message", message)
+                    socket.send(message.value);
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <textarea id="message" style="height: 300px;width: 300px;"></textarea>
+    <input type="button" value="click" onclick="send()"/>
+    <textarea id="receiveMessage" style="height: 300px;width: 300px;"></textarea>
+</body>
+</html>
